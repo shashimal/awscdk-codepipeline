@@ -1,7 +1,14 @@
 import {Stack} from "@aws-cdk/core";
 import {CodeBuildAction} from "@aws-cdk/aws-codepipeline-actions";
 import {Artifact} from "@aws-cdk/aws-codepipeline";
-import {BuildSpec, Cache, LinuxBuildImage, LocalCacheMode, PipelineProject} from "@aws-cdk/aws-codebuild";
+import {
+    BuildEnvironmentVariableType,
+    BuildSpec,
+    Cache,
+    LinuxBuildImage,
+    LocalCacheMode,
+    PipelineProject
+} from "@aws-cdk/aws-codebuild";
 import {PipelineConfig} from "../../config/pipleline-config";
 import {ManagedPolicy} from "@aws-cdk/aws-iam";
 import {IRepository, Repository} from "@aws-cdk/aws-ecr";
@@ -10,12 +17,12 @@ export class BuildStage {
     private readonly stack: Stack;
     private readonly appName: string;
     private readonly ecrRepository: IRepository
-    private readonly buildOutput : Artifact;
+    private readonly buildOutput: Artifact;
 
     constructor(stack: Stack) {
         this.stack = stack;
         this.appName = this.stack.node.tryGetContext('appName');
-        this.ecrRepository = Repository.fromRepositoryName(this.stack, `EcrRepo-${PipelineConfig.serviceName}`,PipelineConfig.buildStage.ecrRepositoryName);
+        this.ecrRepository = Repository.fromRepositoryName(this.stack, `EcrRepo-${PipelineConfig.serviceName}`, PipelineConfig.buildStage.ecrRepositoryName);
         this.buildOutput = new Artifact();
     }
 
@@ -36,11 +43,9 @@ export class BuildStage {
                 privileged: true,
             },
             environmentVariables: this.getEnvironmentVariables(),
-            buildSpec: BuildSpec.fromObject(this.getBuildSpec()),
+            buildSpec: BuildSpec.fromObject(PipelineConfig.buildStage.buildSpec),
             cache: Cache.local(LocalCacheMode.DOCKER_LAYER, LocalCacheMode.CUSTOM),
         });
-
-        console.log(BuildSpec.fromSourceFilename("config/buildspec-ecr.yaml").toBuildSpec())
 
         codeBuildProject.role?.addManagedPolicy(
             ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser')
@@ -48,24 +53,9 @@ export class BuildStage {
         return codeBuildProject;
     }
 
-    private getBuildSpec = () => {
-        const configBuildSpecObject = PipelineConfig.buildStage.buildSpec;
-        const imageDetail = 'printf \'{"ImageURI":"%s"}\' $ECR_REPO:latest > imageDetail.json';
-        const phases = {
-            ...configBuildSpecObject.phases,
-            post_build: {
-                commands: [...configBuildSpecObject.phases.post_build.commands,
-                    imageDetail
-                ]
-            }
-        };
-        return {...configBuildSpecObject, phases};
-    }
 
     private getEnvironmentVariables = () => {
-        let configEnvObject = PipelineConfig.buildStage.environmentVariables;
         return {
-            ...configEnvObject,
             ACCOUNT_ID: {
                 value: this.stack.account
             },
@@ -77,6 +67,14 @@ export class BuildStage {
             },
             IMAGE_NAME: {
                 value: PipelineConfig.serviceName
+            },
+            DOCKER_USER_NAME: {
+                type: BuildEnvironmentVariableType.PARAMETER_STORE,
+                value: '/DOCKER/USER'
+            },
+            DOCKER_USER_PASSWORD: {
+                type: BuildEnvironmentVariableType.PARAMETER_STORE,
+                value: '/DOCKER/USER/PASSWORD'
             }
         };
     }

@@ -5,10 +5,13 @@ export const PipelineConfig: IPipelineConfigProps = {
     sourceStage: {
         repositoryName: 'driver-service'
     },
-    buildStage: BuildSpecContent,
+    buildStage: {
+        ecrRepositoryName: 'driver-service',
+        buildSpec: BuildSpecContent
+    },
     deployStage: {},
     approvalStage: {
-        notifyEmails: ['shashimald@gmail.com'],
+        notifyEmails: ['abc@gmail.com'],
         notifyTopic: 'arn:aws:sns:us-east-1:793209430381:driver-service-approval-notification'
     },
     notification: {

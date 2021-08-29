@@ -14,13 +14,11 @@ export interface ISourceStage {
 }
 
 export interface IBuildStage {
-    environmentVariables: any;
     ecrRepositoryName: string
     buildSpec: any
 }
 
 export interface IDeployStage {
-
 }
 
 export interface IApprovalStage {

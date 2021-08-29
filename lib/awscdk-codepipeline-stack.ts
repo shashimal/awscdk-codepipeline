@@ -35,6 +35,8 @@ export class AwscdkCodepipelineStack extends cdk.Stack {
             actions: [buildStage.getCodeBuildAction(sourceStage.getSourceOutput())]
         });
 
+        //Staging Stage
+
         //Approval Stage
         const approvalStage = new ApprovalStage(this);
         this.codepipeline.addStage({
@@ -52,6 +54,5 @@ export class AwscdkCodepipelineStack extends cdk.Stack {
         //Configure notifications for the pipeline events
         const pipelineNotification = new PipelineNotification(this);
         pipelineNotification.configureSlackNotifications(this.codepipeline, PipelineConfig.notification.slack);
-
     }
 }
