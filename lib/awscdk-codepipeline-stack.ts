@@ -35,7 +35,12 @@ export class AwscdkCodepipelineStack extends cdk.Stack {
             actions: [buildStage.getCodeBuildAction(sourceStage.getSourceOutput())]
         });
 
-        //Staging Stage
+        // //Staging Stage
+        const deployStage = new DeployStage(this);
+        this.codepipeline.addStage({
+            stageName: "Deploy-UAT",
+            actions: [deployStage.getEcsDeployAction("dev", buildStage.getBuildOutput())]
+        });
 
         //Approval Stage
         const approvalStage = new ApprovalStage(this);
@@ -45,10 +50,9 @@ export class AwscdkCodepipelineStack extends cdk.Stack {
         });
 
         //Deploy to DEV and SIT Stages
-        const deployStageDev = new DeployStage(this);
         this.codepipeline.addStage({
             stageName: "Deploy-Prod",
-            actions: [deployStageDev.getCodeDeployEcsDeployAction("dev", buildStage.getBuildOutput())]
+            actions: [deployStage.getCodeDeployEcsDeployAction("prod", buildStage.getBuildOutput())]
         });
 
         //Configure notifications for the pipeline events

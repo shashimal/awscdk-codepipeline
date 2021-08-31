@@ -19,7 +19,7 @@ export class PipelineNotification {
                 'codepipeline-pipeline-stage-execution-failed',
                 'codepipeline-pipeline-pipeline-execution-failed',
             ],
-            source: source,
+            source,
             targets: this.getSlackTargets(slackConfig)
         })
     };

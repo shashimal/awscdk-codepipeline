@@ -1,5 +1,6 @@
 import {IPipelineConfigProps} from "../lib/PipelineConfigProps";
 import {BuildSpecContent} from "./buildspec-content";
+
 export const PipelineConfig: IPipelineConfigProps = {
     serviceName: 'driver-service',
     sourceStage: {
@@ -9,7 +10,16 @@ export const PipelineConfig: IPipelineConfigProps = {
         ecrRepositoryName: 'driver-service',
         buildSpec: BuildSpecContent
     },
-    deployStage: {},
+    deployStage: {
+        dev: {
+            clusterName: 'DriverServiceDev',
+            vpcId: 'vpc-0645d186bfaa090df'
+        },
+        prod: {
+            clusterName: '',
+            vpcId: ''
+        },
+    },
     approvalStage: {
         notifyEmails: ['abc@gmail.com'],
         notifyTopic: 'arn:aws:sns:us-east-1:793209430381:driver-service-approval-notification'

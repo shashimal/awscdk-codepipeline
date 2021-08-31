@@ -1,8 +1,11 @@
 import {Stack} from "@aws-cdk/core";
-import {CodeDeployEcsDeployAction} from "@aws-cdk/aws-codepipeline-actions";
+import {CodeDeployEcsDeployAction, EcsDeployAction} from "@aws-cdk/aws-codepipeline-actions";
 import {Artifact} from "@aws-cdk/aws-codepipeline";
 import {PipelineConfig} from "../../config/pipleline-config";
 import {EcsApplication, EcsDeploymentGroup, IEcsDeploymentGroup} from "@aws-cdk/aws-codedeploy";
+import {Cluster, FargateService, IBaseService} from "@aws-cdk/aws-ecs";
+import {ISecurityGroup, SecurityGroup, Vpc} from "@aws-cdk/aws-ec2";
+import {IDeployStageParam} from "../PipelineConfigProps";
 
 export class DeployStage {
     private readonly stack: Stack;
@@ -13,7 +16,11 @@ export class DeployStage {
         this.appName = this.stack.node.tryGetContext("appName");
     }
 
-    public getCodeDeployEcsDeployAction = (env: String, buildArtifact: Artifact): CodeDeployEcsDeployAction => {
+    /*
+    * ECS CodeDeploy action for Blue/Green deployment
+    *
+    * */
+    public getCodeDeployEcsDeployAction = (env: string, buildArtifact: Artifact): CodeDeployEcsDeployAction => {
         const ecsApplication = EcsApplication.fromEcsApplicationName(this.stack,
             `${this.appName}-EcsCodeDeploymentApp`, PipelineConfig.serviceName);
 
@@ -33,5 +40,45 @@ export class DeployStage {
                 taskDefinitionPlaceholder: "IMAGE1_NAME"
             }]
         });
+    }
+
+    /*
+   * ECS deploy action
+   *
+   * */
+    public getEcsDeployAction = (env: string,  buildArtifact: Artifact): EcsDeployAction => {
+        const deployEnv  = this.getDeployEnvDetails(env);
+        const baseService: IBaseService = FargateService.fromFargateServiceAttributes(this.stack, `${this.appName}-ecs-fargateservice-${env}`,{
+            cluster: Cluster.fromClusterAttributes(this.stack, `${this.stack}-ecscluster-${env}`,{
+                clusterName: deployEnv.clusterName,
+                securityGroups: [SecurityGroup.fromSecurityGroupId(this.stack,`${this.appName}-${env}-securityGroup`,'sg-0b707ebcc5b2f785c')],
+                vpc: Vpc.fromLookup(this.stack, `${this.stack}-${env}-vpc`, {
+                    vpcId: deployEnv.vpcId
+                })
+            }),
+            serviceName: `${PipelineConfig.serviceName}-${env}`
+        });
+
+        console.log(baseService.serviceName)
+
+       return  new EcsDeployAction({
+           actionName: `ECS-${env}`,
+           service:baseService ,
+           input: buildArtifact
+       })
+    }
+
+    private getDeployEnvDetails = (env: string)  => {
+        switch (env) {
+            case "uat": {
+                return PipelineConfig.deployStage.dev;
+            }
+            case "prod": {
+                return PipelineConfig.deployStage.prod;
+            }
+            default: {
+                return PipelineConfig.deployStage.dev;
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ export interface IPipelineConfigProps {
     buildStage: IBuildStage;
     approvalStage: IApprovalStage;
     notification: INotification;
-    deployStage?: IDeployStage;
+    deployStage: IDeployStage;
 }
 
 export interface ISourceStage {
@@ -19,6 +19,13 @@ export interface IBuildStage {
 }
 
 export interface IDeployStage {
+    prod: IDeployStageParam;
+    dev: IDeployStageParam;
+}
+
+export interface IDeployStageParam {
+    clusterName: string,
+    vpcId: string
 }
 
 export interface IApprovalStage {
