@@ -4,8 +4,7 @@ import {Artifact} from "@aws-cdk/aws-codepipeline";
 import {PipelineConfig} from "../../config/pipleline-config";
 import {EcsApplication, EcsDeploymentGroup, IEcsDeploymentGroup} from "@aws-cdk/aws-codedeploy";
 import {Cluster, FargateService, IBaseService} from "@aws-cdk/aws-ecs";
-import {ISecurityGroup, SecurityGroup, Vpc} from "@aws-cdk/aws-ec2";
-import {IDeployStageParam} from "../PipelineConfigProps";
+import {SecurityGroup, Vpc} from "@aws-cdk/aws-ec2";
 
 export class DeployStage {
     private readonly stack: Stack;
@@ -58,8 +57,6 @@ export class DeployStage {
             }),
             serviceName: `${PipelineConfig.serviceName}-${env}`
         });
-
-        console.log(baseService.serviceName)
 
        return  new EcsDeployAction({
            actionName: `ECS-${env}`,

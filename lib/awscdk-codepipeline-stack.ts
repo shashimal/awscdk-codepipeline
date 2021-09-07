@@ -9,54 +9,51 @@ import {PipelineConfig} from "../config/pipleline-config";
 
 export class AwscdkCodepipelineStack extends cdk.Stack {
 
-    private readonly appName: string;
-    private readonly codepipeline: Pipeline;
-
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        this.appName = this.node.tryGetContext("appName");
+        const appName = this.node.tryGetContext("appName");
 
-        this.codepipeline = new Pipeline(this, this.appName, {
+        const codepipeline = new Pipeline(this, appName, {
             crossAccountKeys: false
         })
 
         //Source Stage
         const sourceStage = new SourceStage(this);
-        this.codepipeline.addStage({
+        codepipeline.addStage({
             stageName: "Source",
             actions: [sourceStage.getCodeCommitSourceAction()],
         });
 
         //Build Stage
         const buildStage = new BuildStage(this);
-        this.codepipeline.addStage({
+        codepipeline.addStage({
             stageName: "Build",
             actions: [buildStage.getCodeBuildAction(sourceStage.getSourceOutput())]
         });
 
         // //Staging Stage
         const deployStage = new DeployStage(this);
-        this.codepipeline.addStage({
+        codepipeline.addStage({
             stageName: "Deploy-UAT",
             actions: [deployStage.getEcsDeployAction("dev", buildStage.getBuildOutput())]
         });
 
         //Approval Stage
         const approvalStage = new ApprovalStage(this);
-        this.codepipeline.addStage({
+        codepipeline.addStage({
             stageName: "Approval",
             actions: [approvalStage.getManualApprovalAction()]
         });
 
         //Deploy to DEV and SIT Stages
-        this.codepipeline.addStage({
+        codepipeline.addStage({
             stageName: "Deploy-Prod",
             actions: [deployStage.getCodeDeployEcsDeployAction("prod", buildStage.getBuildOutput())]
         });
 
         //Configure notifications for the pipeline events
         const pipelineNotification = new PipelineNotification(this);
-        pipelineNotification.configureSlackNotifications(this.codepipeline, PipelineConfig.notification.slack);
+        pipelineNotification.configureSlackNotifications(codepipeline, PipelineConfig.notification.slack);
     }
 }
