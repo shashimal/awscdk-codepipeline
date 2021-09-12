@@ -50,7 +50,7 @@ export class DeployStage {
         const baseService: IBaseService = FargateService.fromFargateServiceAttributes(this.stack, `${this.appName}-ecs-fargateservice-${env}`,{
             cluster: Cluster.fromClusterAttributes(this.stack, `${this.stack}-ecscluster-${env}`,{
                 clusterName: deployEnv.clusterName,
-                securityGroups: [SecurityGroup.fromSecurityGroupId(this.stack,`${this.appName}-${env}-securityGroup`,'sg-0b707ebcc5b2f785c')],
+                securityGroups: [SecurityGroup.fromSecurityGroupId(this.stack,`${this.appName}-${env}-securityGroup`,PipelineConfig.deployStage.prod.securityGroup)],
                 vpc: Vpc.fromLookup(this.stack, `${this.stack}-${env}-vpc`, {
                     vpcId: deployEnv.vpcId
                 })

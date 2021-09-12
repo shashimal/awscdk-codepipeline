@@ -16,9 +16,9 @@ export class ApprovalStage {
 
     public getManualApprovalAction = (): ManualApprovalAction => {
         return new ManualApprovalAction({
-            actionName: "UAT-Approval",
+            actionName: "QA-Approval",
             notifyEmails: PipelineConfig.approvalStage?.notifyEmails,
-            notificationTopic: Topic.fromTopicArn(this.stack, `${this.appName}-uat-approval`, PipelineConfig.approvalStage?.notifyTopic)
+            notificationTopic: Topic.fromTopicArn(this.stack, `${this.appName}-QA-approval`, PipelineConfig.approvalStage?.notifyTopic)
         });
     }
 

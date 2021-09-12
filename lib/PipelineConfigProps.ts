@@ -25,7 +25,8 @@ export interface IDeployStage {
 
 export interface IDeployStageParam {
     clusterName: string,
-    vpcId: string
+    vpcId: string,
+    securityGroup: string
 }
 
 export interface IApprovalStage {
