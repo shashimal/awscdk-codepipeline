@@ -53,7 +53,7 @@ export class AwscdkCodepipelineStack extends cdk.Stack {
         });
 
         //Configure notifications for the pipeline events
-        //const pipelineNotification = new PipelineNotification(this);
-        //pipelineNotification.configureSlackNotifications(codepipeline, PipelineConfig.notification.slack);
+        const pipelineNotification = new PipelineNotification(this);
+        pipelineNotification.configureSlackNotifications(codepipeline, PipelineConfig.notification.slack);
     }
 }

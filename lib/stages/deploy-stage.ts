@@ -21,11 +21,11 @@ export class DeployStage {
     * */
     public getCodeDeployEcsDeployAction = (env: string, buildArtifact: Artifact): CodeDeployEcsDeployAction => {
         const ecsApplication = EcsApplication.fromEcsApplicationName(this.stack,
-            `${this.appName}-EcsCodeDeploymentApp`, PipelineConfig.serviceName);
+            `${this.appName}-EcsCodeDeploymentApp`,'driver-service-prod');
 
         const deploymentGroup: IEcsDeploymentGroup = EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(this.stack,
             `${this.appName}-EcsCodeDeploymentGroup-${env}`, {
-                deploymentGroupName: `${PipelineConfig.serviceName}-${env}`,
+                deploymentGroupName: `DriverService-Prod-Deployment`,
                 application: ecsApplication
             });
 
