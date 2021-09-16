@@ -13,24 +13,27 @@ export const PipelineConfig: IPipelineConfigProps = {
     deployStage: {
         dev: {
             clusterName: 'DriverServiceDev',
-            vpcId: 'vpc-0645d186bfaa090df'
+            vpcId: 'vpc-b9dbb0c4',
+            securityGroup: '',
         },
         prod: {
-            clusterName: '',
-            vpcId: ''
+            clusterName: 'DriverServiceProd',
+            vpcId: 'vpc-b9dbb0c4',
+            securityGroup: 'sg-02537d092ba986307'
+
         },
     },
     approvalStage: {
-        notifyEmails: ['abc@gmail.com'],
-        notifyTopic: 'arn:aws:sns:us-east-1:793209430381:driver-service-approval-notification'
+        notifyEmails: ['shashimald@gmail.com'],
+        notifyTopic: 'arn:aws:sns:us-east-1:000:driver-service-approval-notification'
     },
     notification: {
         slack: [
             {
-                channelName: 'driver-service',
-                channelId: 'driver-service-pipeline',
+                channelName: 'driver-service-slack',
+                channelId: 'C02EBB23W7N',
                 workspaceId: 'T02CQ1XC99Q',
-                arn: 'arn:aws:chatbot::793209430381:chat-configuration/slack-channel/driver-service-pipeline'
+                arn: 'arn:aws:chatbot::0000:chat-configuration/slack-channel/driver-service-slack'
             }
         ]
     }
