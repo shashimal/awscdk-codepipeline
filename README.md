@@ -1,8 +1,8 @@
-# Welcome to your CDK TypeScript project!
+#  Creating AWS CodePipeline Using AWS CDK
 
-This is a blank project for TypeScript development with CDK.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+Purpose of this project is to automate the "Client VPN Endpoint" creation by using AWS CDK.
+# Architecture
+![AWS Client VPN endpoint](aws-codepipeline.drawio.png?raw=true)
 
 ## Useful commands
 
