@@ -1,6 +1,6 @@
 #  Creating AWS CodePipeline Using AWS CDK
 
-Purpose of this project is to automate the AWS CodePipeline creation by using AWS CDK.
+Purpose of this project is to create an AWS CodePipeline using AWS CDK.
 # Architecture
 ![AWS Client VPN endpoint](aws-codepipeline.drawio.png?raw=true)
 
